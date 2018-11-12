@@ -2,36 +2,43 @@ from collections import Counter
 
 
 class Lieutenant:
-    def __init__(self, id, traitor=False):
+    def __init__(self, id, is_traitor=False):
         self.id = id
         self.lieutenants = []
         self.vals = []
-        self.traitor = traitor
+        self.is_traitor = is_traitor
 
     def __call__(self, m):
-        self._om_algorithm(general=self,
-                           m=m,
-                           val=True,
-                           )
+        self.om_algorithm(general=self,
+                          m=m,
+                          val=True,
+                          )
 
-    def _om_algorithm(self, general, m, val):
+    def om_algorithm(self, general, m, val):
         if m < 0:
             self.vals.append(val)
-        if m == 0:
+        elif m == 0:
             for l in self.lieutenants:
-                l(self,
-                  general=self,
-                  m=(m - 1),
-                  val=((not val) if self.traitor else val),
-                  )
-            else:
-                for l in self.lieutenants:
-                    if l is not self and l is not general:
-                        l(self, m - 1, val)
+                l.om_algorithm(
+                    general=self,
+                    m=(m - 1),
+                    # val=((not val) if self.is_traitor else val),
+                    val=(not self.is_traitor),
+                )
+        else:
+            for l in self.lieutenants:
+                if l is not self and l is not general:
+                    l.om_algorithm(
+                        general=self,
+                        m=(m - 1),
+                        # val=((not val) if self.is_traitor else val),
+                        val=(not self.is_traitor),
+                    )
 
-        @property
-        def decision(self):
-            c = Counter(self.lieutenants)
+    @property
+    def decision(self):
+        c = Counter(self.vals)
+        return c.most_common()
 
 
 def init_lieutenants(num, traitors=0):
@@ -39,7 +46,7 @@ def init_lieutenants(num, traitors=0):
     for i in range(num):
         lieutenants.append(Lieutenant(i))
     for l in lieutenants[-traitors:]:
-        l.traitor = True
+        l.is_traitor = True
     for l in lieutenants:
         l.lieutenants = lieutenants
     return lieutenants
@@ -51,8 +58,8 @@ def print_decisions(lieutenants):
 
 
 def main():
-    lieutenants = init_lieutenants(num=5, traitors=1)
-    lieutenants[0](3)
+    lieutenants = init_lieutenants(num=3, traitors=1)
+    lieutenants[0](m=2)
     print_decisions(lieutenants)
 
 
