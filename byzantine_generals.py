@@ -1,3 +1,4 @@
+from argparse import ArgumentParser
 from collections import Counter
 
 
@@ -5,48 +6,59 @@ class Lieutenant:
     def __init__(self, id, is_traitor=False):
         self.id = id
         self.lieutenants = []
-        self.vals = []
+        self.orders = []
         self.is_traitor = is_traitor
 
-    def __call__(self, m):
-        self.om_algorithm(general=self,
+    def __call__(self, m, order):
+        self.om_algorithm(commander=self,
                           m=m,
-                          val=True,
+                          order=order,
                           )
 
-    def om_algorithm(self, general, m, val):
+    def _next_order(self, is_traitor, order, i):
+        if is_traitor:
+            if i % 2 == 0:
+                return "ATTACK" if order == "RETREAT" else "RETREAT"
+        return order
+
+    def om_algorithm(self, commander, m, order):
         if m < 0:
-            self.vals.append(val)
+            self.orders.append(order)
         elif m == 0:
-            for l in self.lieutenants:
+            for i, l in enumerate(self.lieutenants):
                 l.om_algorithm(
-                    general=self,
+                    commander=self,
                     m=(m - 1),
-                    # val=((not val) if self.is_traitor else val),
-                    val=(not self.is_traitor),
+                    order=self._next_order(self.is_traitor, order, i)
                 )
         else:
-            for l in self.lieutenants:
-                if l is not self and l is not general:
+            for i, l in enumerate(self.lieutenants):
+                if l is not self and l is not commander:
                     l.om_algorithm(
-                        general=self,
+                        commander=self,
                         m=(m - 1),
-                        # val=((not val) if self.is_traitor else val),
-                        val=(not self.is_traitor),
+                        order=self._next_order(self.is_traitor, order, i)
                     )
 
     @property
     def decision(self):
-        c = Counter(self.vals)
+        c = Counter(self.orders)
         return c.most_common()
 
 
-def init_lieutenants(num, traitors=0):
+def init_lieutenants(generals):
     lieutenants = []
-    for i in range(num):
-        lieutenants.append(Lieutenant(i))
-    for l in lieutenants[-traitors:]:
-        l.is_traitor = True
+    for i, g in enumerate(generals):
+        l = Lieutenant(i)
+        if g == "l":
+            pass
+        elif g == "t":
+            l.is_traitor = True
+        else:
+            print("Error, bad input in generals list: {}".format(generals))
+            exit(1)
+        lieutenants.append(l)
+    # Add list of other lieutenants to each lieutenant.
     for l in lieutenants:
         l.lieutenants = lieutenants
     return lieutenants
@@ -58,8 +70,21 @@ def print_decisions(lieutenants):
 
 
 def main():
-    lieutenants = init_lieutenants(num=3, traitors=1)
-    lieutenants[0](m=2)
+    parser = ArgumentParser()
+    parser.add_argument("-m", type=int, dest="recursion",
+                        help=" The level of recursion in the algorithm, where M > 0")
+    parser.add_argument("-G", type=str, dest="generals",
+                        help=" A string of generals (ie 'l,t,l,l,l'...), where l is loyal and t is a traitor.  "
+                             "The first general is the Commander.")
+    parser.add_argument("-O", type=str, dest="order",
+                        help=" The order the commander gives to its lieutenants (Oc ∈ {ATTACK,RETREAT})")
+
+    args = parser.parse_args()
+
+    generals = [x.strip() for x in args.generals.split(',')]
+
+    lieutenants = init_lieutenants(generals=generals)
+    lieutenants[0](m=args.recursion, order=args.order)
     print_decisions(lieutenants)
 
 
