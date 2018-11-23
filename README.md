@@ -36,15 +36,15 @@ commander, or uses the value RETREAT if he receives no value.
 
 **Algorithm OM(m), m > O.** 
 1. The commander sends his value to every lieutenant. 
-2. For each i, let vi be the value Lieutenant i receives 
+2. For each i, let vi be the value General i receives 
 from the commander, or else be RETREAT if he receives no 
-value. Lieutenant i acts as the commander in Algorithm 
+value. General i acts as the commander in Algorithm 
 OM(m - 1) to send the value vi to each of the n - 2 other 
 lieutenants. 
 3. For each i, and each j ~ i, let vj be the value 
-Lieutenant i received from Lieutenant j in step (2) (using 
+General i received from General j in step (2) (using 
 Algorithm  OM(m  -  1)), or else RETREAT if he received no 
-such value. Lieutenant i uses the value majority 
+such value. General i uses the value majority 
 (vl.....v,-1).
 
 ### Implementation
@@ -66,10 +66,57 @@ optional arguments:
 For example:
 ```
 % python3 byzantine_generals.py -m 4 -G l,t,l,l,l -O ATTACK
-Lieutenant 0: [('RETREAT', 62), ('ATTACK', 46)]
-Lieutenant 1: [('ATTACK', 55), ('RETREAT', 53)]
-Lieutenant 2: [('RETREAT', 62), ('ATTACK', 46)]
-Lieutenant 3: [('ATTACK', 55), ('RETREAT', 53)]
-Lieutenant 4: [('RETREAT', 62), ('ATTACK', 46)]
+General 0: [('RETREAT', 62), ('ATTACK', 46)]
+General 1: [('ATTACK', 55), ('RETREAT', 53)]
+General 2: [('RETREAT', 62), ('ATTACK', 46)]
+General 3: [('ATTACK', 55), ('RETREAT', 53)]
+General 4: [('RETREAT', 62), ('ATTACK', 46)]
 ```
  
+### Testing:
+In his paper, Lamport proves that:
+> For any m, Algorithm OM(m) satisfies conditions that
+> *All loyal generals decide upon the same plan of action* and
+> *A small number of traitors cannot cause the loyal 
+> generals to adopt a bad plan* if there are more than 3m 
+> generals and at most m traitors. 
+
+Lets pick m to be 3, with 10 (>3m) generals and 3 (=m) traitors:
+```
+% python3 byzantine_generals.py -m 3 -G l,l,l,t,t,l,l,t,l -O ATTACK
+General 0: [('ATTACK', 303), ('RETREAT', 273)]
+General 1: [('ATTACK', 403), ('RETREAT', 173)]
+General 2: [('ATTACK', 303), ('RETREAT', 273)]
+General 3: [('ATTACK', 403), ('RETREAT', 173)]
+General 4: [('ATTACK', 303), ('RETREAT', 273)]
+General 5: [('ATTACK', 403), ('RETREAT', 173)]
+General 6: [('ATTACK', 303), ('RETREAT', 273)]
+General 7: [('ATTACK', 403), ('RETREAT', 173)]
+General 8: [('ATTACK', 303), ('RETREAT', 273)]
+General 9: [('ATTACK', 403), ('RETREAT', 173)]
+```
+As shown, this works as expected. Each general votes for
+the correct course of action.
+
+Now, let's examine what will happen if we set the number of 
+generals to be less that what is specified in Lamport's
+proof.
+
+Lets pick m to be 3, with 9 (=3m) generals and 3 (=m) traitors:
+```
+%python3 byzantine_generals.py -m 3 -G l,l,l,t,t,l,l,t,l -O ATTACK
+General 0: [('RETREAT', 210), ('ATTACK', 182)]
+General 1: [('ATTACK', 244), ('RETREAT', 148)]
+General 2: [('RETREAT', 210), ('ATTACK', 182)]
+General 3: [('ATTACK', 244), ('RETREAT', 148)]
+General 4: [('RETREAT', 210), ('ATTACK', 182)]
+General 5: [('ATTACK', 244), ('RETREAT', 148)]
+General 6: [('RETREAT', 210), ('ATTACK', 182)]
+General 7: [('ATTACK', 244), ('RETREAT', 148)]
+General 8: [('RETREAT', 210), ('ATTACK', 182)]
+```
+Here we see that the condition no longer holds.  Note that
+while Lamport only specifies the conditions for the 
+success case, there is no guarantee that a given configuration
+of parameters will cause failure: sometimes it will work, 
+and other times it will not.
