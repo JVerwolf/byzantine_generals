@@ -10,18 +10,52 @@ class General:
         self.is_traitor = is_traitor
 
     def __call__(self, m, order):
+        """When a general is called, it acts as the commander,
+        and begins the OM algorithm by passing its command to
+        all the other generals.
+
+        Args:
+            m (int): The level of recursion.
+            order (str): The order, such that order ∈ {"ATTACK","RETREAT"}.
+
+        """
         self.om_algorithm(commander=self,
                           m=m,
                           order=order,
                           )
 
     def _next_order(self, is_traitor, order, i):
+        """A helper function to determine what each commander
+        should pass on as the next order. Traitors will pass-
+        on the opposite command if the index of the general
+        in their `other_generals` list is odd.
+
+        Args:
+            is_traitor (bool): True for traitors.
+            order (str): The received order, such that
+                order ∈ {"ATTACK","RETREAT"}.
+            i(int): The index of the general in question.
+
+        Returns:
+            str: The resulting order ("ATTACK" or "RETREAT").
+
+        """
         if is_traitor:
             if i % 2 == 0:
                 return "ATTACK" if order == "RETREAT" else "RETREAT"
         return order
 
     def om_algorithm(self, commander, m, order):
+        """The OM algorithm from Lamport's paper.
+
+        Args:
+            commander (General): A reference to the general
+                who issued the previous command.
+            m (int): The level of recursion .
+            order (str): The received order, such that
+                order ∈ {"ATTACK","RETREAT"}.
+
+        """
         if m < 0:
             self.orders.append(order)
         elif m == 0:
@@ -42,16 +76,21 @@ class General:
 
     @property
     def decision(self):
+        """Returns a tally of the General's received commands.
+
+        """
         c = Counter(self.orders)
         return c.most_common()
 
 
 def init_generals(generals_spec):
-    """Create a list of generals, given a string input from arg-parse.
+    """Creates a list of generals, given a string
+    input from arg-parse.
 
     Args:
-        generals_spec (list): A list of generals of the form 'l,t,l,t...",
-            w "l" is loyal and "t" is a traitor.
+        generals_spec (list): A list of generals
+            of the form 'l,t,l,t...", where "l"
+            is loyal and "t" is a traitor.
 
     Returns:
         list: A list of initialized generals.
@@ -86,12 +125,10 @@ def main():
                         help=" A string of generals (ie 'l,t,l,l,l'...), where l is loyal and t is a traitor.  "
                              "The first general is the Commander.")
     parser.add_argument("-O", type=str, dest="order",
-                        help=" The order the commander gives to the other generals (Oc ∈ {ATTACK,RETREAT})")
-
+                        help=" The order the commander gives to the other generals (O ∈ {ATTACK,RETREAT})")
     args = parser.parse_args()
 
     generals_spec = [x.strip() for x in args.generals.split(',')]
-
     generals = init_generals(generals_spec=generals_spec)
     generals[0](m=args.recursion, order=args.order)
     print_decisions(generals)
