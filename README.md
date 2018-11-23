@@ -1,6 +1,6 @@
-# Byzantine Generals
+# The Byzantine Generals Problem
 ### Background
-This problem was introduced by Leslie Lamport in the paper 
+This problem was introduced by Leslie Lamport in his paper 
 [The Byzantine Generals Problem](https://www.microsoft.com/en-us/research/uploads/prod/2016/12/The-Byzantine-Generals-Problem.pdf), 
 where he describes the problem as follows:
 
@@ -15,19 +15,21 @@ where he describes the problem as follows:
 > problem is to find an algorithm to ensure that the loyal 
 > generals will reach agreement.”
 
-It is imperative that the loyal generals work as a together 
-as a unit, or else they run the risk of being routed by the 
+As such, it is imperative that the loyal generals work as a together 
+as a unit, else they run the risk of being routed by the 
 enemy.
 
-In his paper, Lamport goes on to describe an algorithm that 
-uses oral messages.  He shows that, when using oral messages, 
-this problem is solvable if-and-only-if more than two thirds 
-of the generals are loyal. 
-
-
 ### Algorithm
-Lamport’s algorithm is as follows. Note that the parameter 
-“m” is the degree of recursion.
+
+In his paper, Lamport describes an algorithm that uses oral 
+messages.  He shows that when using oral messages, this 
+problem is solvable if-and-only-if more than two thirds of 
+the generals are loyal. 
+
+Lamport’s algorithm is as follows _(Note that the parameter 
+“m” is the degree of recursion)_:
+ 
+
 
 **Algorithm OM(0)** (Base Case)
 1. The commander sends his value to every lieutenant.
