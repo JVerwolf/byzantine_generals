@@ -31,24 +31,24 @@ Lamport’s algorithm is as follows _(Note that the parameter
  
 
 
-**Algorithm OM(0)** (Base Case)
-1. The commander sends his value to every lieutenant.
-2. Each lieutenant uses the value he receives from the 
-commander, or uses the value RETREAT if he receives no value. 
-
-**Algorithm OM(m), m > O.** 
-1. The commander sends his value to every lieutenant. 
-2. For each i, let vi be the value General i receives 
-from the commander, or else be RETREAT if he receives no 
-value. General i acts as the commander in Algorithm 
-OM(m - 1) to send the value vi to each of the n - 2 other 
-lieutenants. 
-3. For each i, and each j ~ i, let vj be the value 
-General i received from General j in step (2) (using 
-Algorithm  OM(m  -  1)), or else RETREAT if he received no 
-such value. General i uses the value majority 
-(vl.....v,-1).
-
+> **Algorithm OM(0)** (Base Case)
+> 1. The commander sends his value to every lieutenant.
+> 2. Each lieutenant uses the value he receives from the 
+> commander, or uses the value RETREAT if he receives no value. 
+> 
+> **Algorithm OM(m), m > O.** 
+> 1. The commander sends his value to every lieutenant. 
+> 2. For each i, let vi be the value General i receives 
+> from the commander, or else be RETREAT if he receives no 
+> value. General i acts as the commander in Algorithm 
+> OM(m - 1) to send the value vi to each of the n - 2 other 
+> lieutenants. 
+> 3. For each i, and each j ~ i, let vj be the value 
+> General i received from General j in step (2) (using 
+> Algorithm  OM(m  -  1)), or else RETREAT if he received no 
+> such value. General i uses the value majority 
+> (vl.....v,-1).
+> 
 ### Implementation
 Lamport's OM algorithm is implemented 
 [here](byzantine_generals.py).  The program can be run as follows:
