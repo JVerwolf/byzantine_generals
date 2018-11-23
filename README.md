@@ -43,7 +43,7 @@ Lamport’s algorithm is as follows _(Note that the parameter
 > value. General i acts as the commander in Algorithm 
 > OM(m - 1) to send the value vi to each of the n - 2 other 
 > lieutenants. 
-> 3. For each i, and each j ~ i, let vj be the value 
+> 3. For each i, and each j != i, let vj be the value 
 > General i received from General j in step (2) (using 
 > Algorithm  OM(m  -  1)), or else RETREAT if he received no 
 > such value. General i uses the value majority 
