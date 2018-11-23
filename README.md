@@ -59,7 +59,7 @@ optional arguments:
   -m RECURSION      The level of recursion in the algorithm, where M > 0
   -G GENERALS       A string of generals (ie 'l,t,l,l,l'...), where l is loyal and
                     t is a traitor. The first general is the Commander.
-  -O ORDER          The order the commander gives to its lieutenants (O ∈
+  -O ORDER          The order the commander gives to the other generals (O ∈
                     {ATTACK,RETREAT})
 ```
 
