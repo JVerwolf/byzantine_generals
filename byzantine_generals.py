@@ -2,10 +2,10 @@ from argparse import ArgumentParser
 from collections import Counter
 
 
-class Lieutenant:
+class General:
     def __init__(self, id, is_traitor=False):
         self.id = id
-        self.lieutenants = []
+        self.other_generals = []
         self.orders = []
         self.is_traitor = is_traitor
 
@@ -25,14 +25,14 @@ class Lieutenant:
         if m < 0:
             self.orders.append(order)
         elif m == 0:
-            for i, l in enumerate(self.lieutenants):
+            for i, l in enumerate(self.other_generals):
                 l.om_algorithm(
                     commander=self,
                     m=(m - 1),
                     order=self._next_order(self.is_traitor, order, i)
                 )
         else:
-            for i, l in enumerate(self.lieutenants):
+            for i, l in enumerate(self.other_generals):
                 if l is not self and l is not commander:
                     l.om_algorithm(
                         commander=self,
@@ -46,27 +46,36 @@ class Lieutenant:
         return c.most_common()
 
 
-def init_lieutenants(generals):
-    lieutenants = []
-    for i, g in enumerate(generals):
-        l = Lieutenant(i)
-        if g == "l":
+def init_generals(generals_spec):
+    """Create a list of generals, given a string input from arg-parse.
+
+    Args:
+        generals_spec (list): A list of generals of the form 'l,t,l,t...",
+            w "l" is loyal and "t" is a traitor.
+
+    Returns:
+        list: A list of initialized generals.
+    """
+    generals = []
+    for i, spec in enumerate(generals_spec):
+        general = General(i)
+        if spec == "l":
             pass
-        elif g == "t":
-            l.is_traitor = True
+        elif spec == "t":
+            general.is_traitor = True
         else:
-            print("Error, bad input in generals list: {}".format(generals))
+            print("Error, bad input in generals list: {}".format(generals_spec))
             exit(1)
-        lieutenants.append(l)
-    # Add list of other lieutenants to each lieutenant.
-    for l in lieutenants:
-        l.lieutenants = lieutenants
-    return lieutenants
+        generals.append(general)
+    # Add list of other generals to each general.
+    for general in generals:
+        general.other_generals = generals
+    return generals
 
 
-def print_decisions(lieutenants):
-    for i, l in enumerate(lieutenants):
-        print("Lieutenant {}: {}".format(i, l.decision))
+def print_decisions(generals):
+    for i, l in enumerate(generals):
+        print("General {}: {}".format(i, l.decision))
 
 
 def main():
@@ -77,15 +86,15 @@ def main():
                         help=" A string of generals (ie 'l,t,l,l,l'...), where l is loyal and t is a traitor.  "
                              "The first general is the Commander.")
     parser.add_argument("-O", type=str, dest="order",
-                        help=" The order the commander gives to its lieutenants (Oc ∈ {ATTACK,RETREAT})")
+                        help=" The order the commander gives to the other generals (Oc ∈ {ATTACK,RETREAT})")
 
     args = parser.parse_args()
 
-    generals = [x.strip() for x in args.generals.split(',')]
+    generals_spec = [x.strip() for x in args.generals.split(',')]
 
-    lieutenants = init_lieutenants(generals=generals)
-    lieutenants[0](m=args.recursion, order=args.order)
-    print_decisions(lieutenants)
+    generals = init_generals(generals_spec=generals_spec)
+    generals[0](m=args.recursion, order=args.order)
+    print_decisions(generals)
 
 
 if __name__ == "__main__":
