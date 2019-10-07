@@ -21,8 +21,8 @@ enemy.
 
 ### Algorithm
 
-In his paper, Lamport describes an algorithm that uses oral 
-messages.  He shows that when using oral messages, this 
+In his paper, Lamport describes an algorithm that uses spoken 
+messages.  He shows that when using spoken messages, this 
 problem is solvable if-and-only-if more than two thirds of 
 the generals are loyal. 
 
