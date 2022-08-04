@@ -120,7 +120,10 @@ def print_decisions(generals):
 def main():
     parser = ArgumentParser()
     parser.add_argument("-m", type=int, dest="recursion",
-                        help=" The level of recursion in the algorithm, where M > 0")
+                        help=" The level of recursion in the algorithm, where M > 0. This variable "
+                             "will be used for om_algorithm. om_algorithm(M) means this algorithm solves "
+                             "the problem if there are more than 3M generals while there are at most "
+                             "M traitors amongst the generals")
     parser.add_argument("-G", type=str, dest="generals",
                         help=" A string of generals (ie 'l,t,l,l,l'...), where l is loyal and t is a traitor.  "
                              "The first general is the Commander.")
